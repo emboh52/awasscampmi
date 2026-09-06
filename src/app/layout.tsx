@@ -13,6 +13,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'AwasScamPMI - Pusat Edukasi Anti-Scam Pekerja Migran Indonesia',
   description: 'Basis pengetahuan independen tercepat dan mudah digunakan untuk Pekerja Migran Indonesia (PMI) terhindar dari lowongan palsu, love scam, pinjol ilegal, dan calo bodong.',
+  // Tambahkan baris di bawah ini:
+  verification: {
+    google: 'Qkj5ohpKBF7tVOHrsFUL1osaOIuYuwg4jYTDfDLyvR0', // Masukkan nilai dari atribut content saja
+  }
 };
 
 export default function RootLayout({
