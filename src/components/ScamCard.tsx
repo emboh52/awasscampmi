@@ -1,14 +1,25 @@
 import React from 'react';
 import Link from 'next/link';
-import { AlertTriangle, ShieldAlert, Globe, ArrowRight, Eye, ChevronRight } from 'lucide-react';
-import { ScamItem } from '@/data/scams';
+import { AlertTriangle, Globe, Eye, ChevronRight } from 'lucide-react';
+import { ScamItem } from '@/types/scam';
 
 interface ScamCardProps {
   scam: ScamItem;
 }
 
 export const ScamCard: React.FC<ScamCardProps> = ({ scam }) => {
-  const isDangerous = scam.riskLevel === 'Sangat Berbahaya';
+  // Normalisasi data dengan fallback default yang aman dari TypeScript
+  const riskLevel = scam.risk_level || scam.riskLevel || 'Waspada';
+  const targetCountry = scam.target_country || scam.targetCountry || 'Semua Negara';
+  const category = scam.category_slug || scam.categorySlug || scam.category || 'Umum';
+  const summary = scam.summary || scam.description || scam.chronology || '';
+
+  // Validasi array redFlags
+  const rawRedFlags = scam.red_flags || scam.redFlags;
+  const redFlags = Array.isArray(rawRedFlags) ? rawRedFlags : [];
+  const firstRedFlag = redFlags.length > 0 ? redFlags[0] : null;
+
+  const isDangerous = riskLevel === 'Sangat Berbahaya';
 
   return (
     <div className="bg-white rounded-2xl border-2 border-slate-200 hover:border-slate-400 shadow-md hover:shadow-xl transition-all flex flex-col justify-between overflow-hidden group">
@@ -24,20 +35,20 @@ export const ScamCard: React.FC<ScamCardProps> = ({ scam }) => {
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5 stroke-[3]" />
-            {scam.riskLevel}
+            {riskLevel}
           </span>
 
           {/* Target Country */}
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-200 text-slate-800">
             <Globe className="w-3.5 h-3.5 text-slate-600" />
-            {scam.targetCountry}
+            {targetCountry}
           </span>
         </div>
 
         {/* Card Body */}
         <div className="p-5 space-y-3">
           <div className="text-xs font-bold text-red-600 uppercase tracking-wider">
-            {scam.category}
+            {category}
           </div>
 
           <h3 className="text-lg font-black text-slate-900 group-hover:text-red-600 transition-colors leading-snug">
@@ -47,19 +58,21 @@ export const ScamCard: React.FC<ScamCardProps> = ({ scam }) => {
           </h3>
 
           <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
-            {scam.summary}
+            {summary}
           </p>
 
-          {/* Key Red Flags Quick Preview */}
-          <div className="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg">
-            <p className="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1">
-              <Eye className="w-3.5 h-3.5 text-amber-600" />
-              Ciri Utama Penipuan:
-            </p>
-            <p className="text-xs text-amber-950 font-medium line-clamp-2">
-              "{scam.redFlags[0]}"
-            </p>
-          </div>
+          {/* Preview Ciri Utama */}
+          {firstRedFlag && (
+            <div className="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg">
+              <p className="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1">
+                <Eye className="w-3.5 h-3.5 text-amber-600" />
+                Ciri Utama Penipuan:
+              </p>
+              <p className="text-xs text-amber-950 font-medium line-clamp-2">
+                "{firstRedFlag}"
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -76,3 +89,5 @@ export const ScamCard: React.FC<ScamCardProps> = ({ scam }) => {
     </div>
   );
 };
+
+export default ScamCard;

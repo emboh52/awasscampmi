@@ -2,13 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, ShieldAlert, AlertTriangle, Loader2 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase'; // Memakai singleton instance
 import { ScamCard } from '@/components/ScamCard';
-
-// Inisialisasi Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function ModusCatalogPage() {
   const [scams, setScams] = useState<any[]>([]);
@@ -28,23 +23,21 @@ export default function ModusCatalogPage() {
     { id: 'kerja-sampingan', label: 'Kerja Sampingan Online' },
   ];
 
-  // Fetch Data dari Supabase
   useEffect(() => {
     async function fetchScams() {
       setLoading(true);
       const { data, error } = await supabase
-        .from('scams') // Sesuaikan dengan nama tabel di Supabase Anda (misal: 'posts' atau 'scams')
+        .from('scams') // Query langsung ke tabel scams
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Gagal mengambil data modus:', error.message);
       } else if (data) {
-        // Normalisasi format kolom Supabase (snake_case) ke format komponen (camelCase)
         const normalizedData = data.map((scam) => ({
           ...scam,
-          summary: scam.summary || scam.description || scam.content || '',
-          categorySlug: scam.category_slug || scam.categorySlug || 'pra-keberangkatan',
+          summary: scam.summary || scam.description || scam.chronology || '',
+          categorySlug: scam.category_slug || scam.category || 'pra-keberangkatan',
           targetCountry: scam.target_country || scam.targetCountry || 'Semua Negara',
           riskLevel: scam.risk_level || scam.riskLevel || 'Waspada',
           redFlags: Array.isArray(scam.red_flags)
